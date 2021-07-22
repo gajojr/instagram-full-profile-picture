@@ -4,9 +4,12 @@ import './App.css';
 
 function App() {
   const [imageURL, setImageURL] = useState('');
+  const [loadingImage, setLoadingImage] = useState(false);
 
   const onSubmit = e => {
     e.preventDefault();
+
+    setLoadingImage(true);
 
     axios
       .get(
@@ -17,6 +20,12 @@ function App() {
       )
       .then(response => {
         console.log(response);
+        if (response.headers['content-type'] === 'text/html; charset=utf-8') {
+          setLoadingImage(false);
+          alert('error occurred while trying to retrieve the image');
+          return;
+        }
+
         const base64 = btoa(
           new Uint8Array(response.data).reduce(
             (data, byte) => data + String.fromCharCode(byte),
@@ -24,8 +33,12 @@ function App() {
           ),
         );
         setImageURL("data:;base64," + base64);
+        setLoadingImage(false);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setLoadingImage(false);
+        console.log(err);
+      });
   }
 
   return (
@@ -40,6 +53,7 @@ function App() {
         <button type="submit">Search</button>
       </form>
 
+      {loadingImage && <div className="loader"></div>}
       {imageURL && <img src={imageURL} alt="profile" />}
     </div>
   );
