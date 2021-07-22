@@ -1,22 +1,10 @@
-import time
-from flask import Flask
+from flask import Flask, request, send_file
+from ig_profile import ProfileImage as pimage
 
 app = Flask(__name__)
 
-users = [{
-    "id": 1,
-    "name": 'andrija',
-    "last_name": 'gajic'
-}, {
-    "id": 2,
-    "name": 'nikola',
-    "last_name": 'poletarac'
-}, {
-    "id": 3,
-    "name": 'gaser',
-    "last_name": 'makser'
-}]
-
-@app.route('/users')
-def get_current_time():
-    return {'users': users}
+@app.route('/get-profile-picture')
+def get_profile_picture():
+    username = request.args.get('username')
+    return send_file(pimage.image(username), f'./{username}-profile-picture.jpg')
+    

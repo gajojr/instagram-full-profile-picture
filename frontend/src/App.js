@@ -1,24 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [users, setUsers] = useState([]);
+  const [imageURL, setImageURL] = useState('');
 
-  useEffect(() => {
-    fetch('/users')
-      .then(res => res.json())
-      .then(data => setUsers(data.users))
+  const onSubmit = e => {
+    e.preventDefault();
+
+    axios
+      .get(
+        `/get-profile-picture?username=${e.target.username.value}`,
+        {
+          responseType: 'arraybuffer'
+        }
+      )
+      .then(response => {
+        console.log(response);
+        const base64 = btoa(
+          new Uint8Array(response.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            '',
+          ),
+        );
+        setImageURL("data:;base64," + base64);
+      })
       .catch(err => console.log(err));
-  }, []);
+  }
 
   return (
     <div className="App">
-      Users list:
-      <div>
-        {users && users.map(user => {
-          return <p key={user.id}>{user.name} {user.last_name}</p>
-        })}
-      </div>
+      Search profile:
+      <form onSubmit={onSubmit}>
+        <label htmlFor="username">
+          Username:
+          <input type="text" name="username" label="somebody.somewhere" />
+        </label>
+
+        <button type="submit">Search</button>
+      </form>
+
+      {imageURL && <img src={imageURL} alt="profile" />}
     </div>
   );
 }
