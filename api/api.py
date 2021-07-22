@@ -1,3 +1,4 @@
+import os
 from flask import Flask, Response, request, send_file
 from ig_profile import ProfileImage as pimage
 
@@ -13,4 +14,6 @@ def get_profile_picture():
         r = Response(response="Outside API error occurred", status=500, mimetype="application/xml")
         r.headers["Content-Type"] = "text/xml; charset=utf-8"
         return "Outside API error occurred"
-    
+    finally:
+        if os.path.isfile(f'./{username}.png'):
+            os.remove(f'{username}.png')
