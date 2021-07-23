@@ -9,6 +9,7 @@ function App() {
   const onSubmit = e => {
     e.preventDefault();
 
+    setImageURL('');
     setLoadingImage(true);
 
     axios
@@ -22,7 +23,7 @@ function App() {
         console.log(response);
         if (response.headers['content-type'] === 'text/html; charset=utf-8') {
           setLoadingImage(false);
-          alert('error occurred while trying to retrieve the image');
+          alert('Profile doesn\'t exist');
           return;
         }
 
